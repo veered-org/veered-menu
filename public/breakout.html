@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Oversimplified Breakout — veered.org</title>
 <meta name="robots" content="noindex">
-<meta name="description" content="A brick-breaking game that doubles as a launcher: clear a row to open one of the free two-player browser games behind it.">
+<meta name="description" content="A brick-breaking game that doubles as a launcher: clear a row to open one of the free browser games behind it.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Oversimplified Breakout">
-<meta property="og:description" content="A brick-breaking game that doubles as a launcher for a small collection of free two-player browser games.">
+<meta property="og:description" content="A brick-breaking game that doubles as a launcher for a small collection of free browser games.">
 <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -17,9 +17,10 @@
     --bg:#000;
     --ink:#e8e8d8;
     --dim:#6a6a5a;
-    --g1:#f0821e;   /* swarm v0.1 */
-    --g2:#a33b4c;   /* merlot v0.21 */
-    --g3:#58c840;   /* maroon isles  */
+    --g1:#a33b4c;   /* merlot */
+    --g2:#c8457a;   /* maroon isles quest */
+    --g3:#f0821e;   /* carmine (swarm) */
+    --g4:#e0b83a;   /* trifecta */
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
@@ -98,9 +99,11 @@
   .card[data-g="0"]{border-left-color:var(--g1)}
   .card[data-g="1"]{border-left-color:var(--g2)}
   .card[data-g="2"]{border-left-color:var(--g3)}
+  .card[data-g="3"]{border-left-color:var(--g4)}
   .card[data-g="0"]:hover,.card[data-g="0"]:focus-visible{border-color:var(--g1)}
   .card[data-g="1"]:hover,.card[data-g="1"]:focus-visible{border-color:var(--g2)}
   .card[data-g="2"]:hover,.card[data-g="2"]:focus-visible{border-color:var(--g3)}
+  .card[data-g="3"]:hover,.card[data-g="3"]:focus-visible{border-color:var(--g4)}
   .card svg{width:44px;height:44px;flex:0 0 44px;shape-rendering:crispEdges}
   .card h2{margin:0 0 3px;font-size:13px;letter-spacing:.12em}
   .card p{margin:0;font-size:11px;line-height:1.45;color:var(--dim);letter-spacing:.04em}
@@ -120,7 +123,7 @@
   details p{font-size:12px;line-height:1.7;color:#9a9a8a;max-width:62ch}
   details code{
     display:block;background:#0d0d0d;border:1px solid #1e1e1e;
-    padding:8px 10px;margin:6px 0;color:var(--g3);font-size:12px;overflow-x:auto;
+    padding:8px 10px;margin:6px 0;color:#58c840;font-size:12px;overflow-x:auto;
   }
   footer{margin-top:30px;font-size:10px;letter-spacing:.14em;color:#333;text-transform:uppercase}
 </style>
@@ -130,7 +133,7 @@
 <section class="stage" id="stage">
   <canvas id="cv" width="320" height="200" aria-label="Breakout-style game selector. Press 1, 2 or 3 to choose a game, or scroll down for links."></canvas>
   <div class="hud">
-    <span id="hint"><a class="back" href="./">Esc &mdash; AutoMenu</a> &nbsp;&middot;&nbsp; Arrow keys or mouse to move &middot; 1-3 to select</span>
+    <span id="hint"><a class="back" href="./">Esc &mdash; AutoMenu</a> &nbsp;&middot;&nbsp; Arrow keys or mouse to move &middot; 1-4 to select</span>
     <span class="btns">
       <button id="snd" aria-pressed="true">Sound: on</button>
       <button id="fs">Full screen</button>
@@ -161,35 +164,34 @@
  * ------------------------------------------------------------------ */
 const GAMES = [
   { key:'1',
-    title:'SWARM',
-    sub:'V0.1',
-    blurb:'1v1. Drag-select your swarms, send them at the towers, break the enemy base.',
-    url:'https://swarm.veered.org',
-    color:'#f0821e' },
-  { key:'2',
     title:'MERLOT',
-    sub:'V0.21',
-    blurb:'Up to 4v4. You drive one of eight tanks; the minions fight on their own. Bots fill empty seats.',
+    sub:'V0.44',
+    blurb:'1 to 12 players, team tank strategy in a steel winery. Bots fill any empty seat.',
     url:'https://merlot.veered.org',
     color:'#a33b4c' },
-  { key:'3',
-    title:'MAROON ISLES QUEST',
-    sub:'HEIR TODAY, GONE TOMORROW',
-    blurb:'Two-player co-op text adventure. Alexander and Jollo, one night to stop the Vizier.',
+  { key:'2',
+    title:'MAROON',
+    sub:'ISLES QUEST',
+    blurb:'Two-player co-op text adventure, a parody: Hair Today, Bald Tomorrow. Work together or stay stuck.',
     url:'https://quest.veered.org',
-    color:'#58c840' },
+    color:'#c8457a' },
+  { key:'3',
+    title:'CARMINE',
+    sub:'SWARM V0.1',
+    blurb:'The prototype for Merlot. 1v1: drag-select your swarms, send them at the towers, break the enemy base.',
+    url:'https://swarm.veered.org',
+    color:'#f0821e' },
+  { key:'4',
+    title:'TRIFECTA',
+    sub:'CARD GAME',
+    blurb:'War, Ratscrew and 1-2-3-4 chained together. Read the rules now; the online version is on its way.',
+    url:'/trifecta/',
+    color:'#e0b83a' },
 ];
 
 /* 16x16 pixel icons — the silhouette has to step in width or a
    single-colour shape reads as one blob */
 const ICONS = [
-  /* swarm closing on a tower */
-  `<rect x="10" y="3" width="5" height="11"/>
-   <rect x="11" y="3" width="1" height="2" fill="#000"/>
-   <rect x="13" y="3" width="1" height="2" fill="#000"/>
-   <rect x="1" y="6" width="2" height="2"/><rect x="4" y="3" width="2" height="2"/>
-   <rect x="4" y="9" width="2" height="2"/><rect x="1" y="12" width="2" height="2"/>
-   <rect x="7" y="7" width="2" height="2"/>`,
   /* tank */
   `<rect x="11" y="5" width="5" height="2"/>
    <rect x="5" y="4" width="6" height="4"/>
@@ -206,6 +208,20 @@ const ICONS = [
    <rect x="3" y="8" width="2" height="2" fill="#000"/>
    <rect x="7" y="8" width="2" height="2" fill="#000"/>
    <rect x="11" y="8" width="2" height="2" fill="#000"/>`,
+  /* swarm closing on a tower */
+  `<rect x="10" y="3" width="5" height="11"/>
+   <rect x="11" y="3" width="1" height="2" fill="#000"/>
+   <rect x="13" y="3" width="1" height="2" fill="#000"/>
+   <rect x="1" y="6" width="2" height="2"/><rect x="4" y="3" width="2" height="2"/>
+   <rect x="4" y="9" width="2" height="2"/><rect x="1" y="12" width="2" height="2"/>
+   <rect x="7" y="7" width="2" height="2"/>`,
+  /* two cards, fanned */
+  `<rect x="2" y="3" width="8" height="11"/>
+   <rect x="3" y="4" width="6" height="9" fill="#000"/>
+   <rect x="5" y="7" width="2" height="3"/>
+   <rect x="7" y="1" width="8" height="11"/>
+   <rect x="8" y="2" width="6" height="9" fill="#000"/>
+   <rect x="10" y="5" width="2" height="3"/>`,
 ];
 
 /* ---------------- cards (also the no-JS / no-canvas fallback) ------- */
@@ -229,7 +245,7 @@ const ctx = cv.getContext('2d');
    the viewport, so the playfield fills the screen instead of letterboxing. */
 const H = 200, COLS = 8, GAP = 2, MARGIN = 16;
 let W = 320, BW = 34, LEFT = 16;
-const ROW_Y = [46, 72, 98];
+const ROW_Y = [46, 72, 98, 124];
 
 const rows = GAMES.map((g, r) => ({
   y: ROW_Y[r], color: g.color, label: g.title + '  ' + g.sub,
