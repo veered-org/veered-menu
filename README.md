@@ -1,4 +1,4 @@
-# Veered Menu
+# Veered Menu: DOS-Style Browser Game Launcher (Veered menu)
 
 **Play it now: [veered.org](https://veered.org)**
 
