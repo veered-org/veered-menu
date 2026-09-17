@@ -36,6 +36,7 @@
   }
   #scr .row{line-height:inherit}
   #scr span{white-space:pre}
+  #scr .b{font-weight:bold}
   #scr .item,#scr .mail,#scr .pager{cursor:pointer}
 
   /* scanlines + vignette, sized to the text cell so they never moire */
@@ -96,10 +97,10 @@ document.getElementById('splashart').src =
 <noscript>
   <ul>
     <li><a href="https://swarm.veered.org">Swarm Command (v0.1)</a></li>
-    <li><a href="https://merlot.veered.org">Merlot Dialogue (v0.44)</a></li>
+    <li><a href="https://merlot.veered.org"><b>Merlot: Real-time multiplayer tank game</b></a></li>
     <li><a href="https://quest.veered.org">Maroon Isles Quest</a></li>
     <li><a href="breakout.html">Oversimplified Breakout</a></li>
-    <li><a href="/code/trifecta/">Trifecta card game rules</a></li>
+    <li><a href="/trifecta/">Trifecta card game rules</a></li>
     <li><a href="/code/">Open-source code</a></li>
     <li><a href="https://PatentlyJewish.com">PatentlyJewish.com</a></li>
     <li><a href="https://PatentLawNY.com">PatentLawNY.com</a></li>
@@ -118,11 +119,11 @@ const MENUS = {
     { label:'Multiplayer games  ►',
       desc:'Merlot, Maroon Isles Quest, Carmine (Swarm) and Oversimplified Breakout.',
       open:'games', fg:11 },
-    { label:'Trifecta & game source code  ►',
-      desc:'Trifecta card game rules, and the source code of every game.',
+    { label:'Multi-player game source code  ►',
+      desc:'Trifecta card game rules, and the source code of every multi-player game.',
       open:'source', fg:12 },
-    { label:'Desktop tools  ►',
-      desc:'Linux desktop tools: any Linux desktop, or COSMIC.',
+    { label:'Linux desktop mods  ►',
+      desc:'Really simple tools for any Linux desktop, and mods for COSMIC.',
       open:'desktop', fg:9 },
     { label:'Jewish life  ►',
       desc:'Shabbos Board, community directory, PatentlyJewish.com.',
@@ -130,12 +131,12 @@ const MENUS = {
     { label:'Work tools  ►',
       desc:'PatentLawNY.com, patent PDF tools, payments, consultation booking.',
       open:'work', fg:15 },
-    { label:'Modern website please!', gap:true,
+    { label:'Modern website please!', gap:true, bold:true,
       desc:'The same games and tools on a regular, modern web page.',
       url:'/modern/', fg:14 },
   ]},
   games: { title:'Multiplayer Games', items:[
-    { label:'Merlot: Dialogue (v0.44)',
+    { label:'Merlot: Real-time multiplayer tank game', bold:true,
       desc:'1 to 12 players, team tank command. Bots take any seat nobody claims.',
       url:'https://merlot.veered.org', fg:11 },
     { label:'Maroon: Isles Quest',
@@ -149,7 +150,7 @@ const MENUS = {
       url:'breakout.html', fg:15 },
     BACK,
   ]},
-  source: { title:'Trifecta & Game Source Code', items:[
+  source: { title:'Multi-player Game Source Code', items:[
     { label:'Trifecta (card game)',
       desc:'A card game I made up. Online version in the works. Rules here.',
       url:'/trifecta/', fg:12 },
@@ -163,8 +164,8 @@ const MENUS = {
       url:'/code/', fg:7 },
     BACK,
   ]},
-  desktop: { title:'Desktop Tools', items:[
-    { label:'Any Linux desktop  ►',
+  desktop: { title:'Linux Desktop Mods', items:[
+    { label:'Really simple Linux desktop tools  ►',
       desc:'Music player, SMS & calls, mouse button remapper.',
       open:'linux', fg:10, icon:['  ▄▄  ',' ▐▀▀▌ ',' ▀▀▀▀ '] },
     { label:'COSMIC desktop  ►',
@@ -175,7 +176,7 @@ const MENUS = {
       url:'/code/', fg:7, icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
     BACK,
   ]},
-  linux: { title:'Desktop Tools ► Any Linux', items:[
+  linux: { title:'Linux Desktop Mods ► Really Simple Tools', items:[
     { label:'Cardinal: music player',
       desc:'Shuffle any music folder, with media keys and resume. Any Linux desktop.',
       url:'/cardinal/', fg:12, icon:['  ▄█  ',' ▐██▌ ','  ▀▀  '] },
@@ -187,8 +188,8 @@ const MENUS = {
       url:'/rufous/', fg:6, icon:['  ▄▄  ',' █▌▐█ ',' ▀██▀ '] },
     BACK,
   ]},
-  cosmic: { title:'Desktop Tools ► COSMIC', items:[
-    { label:'Redshift: panel labels',
+  cosmic: { title:'Linux Desktop Mods ► COSMIC', items:[
+    { label:'Redshift: custom panel with language, time-zone, music tools',
       desc:'Word of the day in your language, sweat-cooling weather, world clocks.',
       url:'/redshift/', fg:9, icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
     { label:'Rouge: screen translator',
@@ -221,7 +222,7 @@ const MENUS = {
       desc:'Drop-in payment page: enter your own Braintree keys and go.',
       url:'/redwood/', fg:11 },
     { label:'Crimson: consultation booking',
-      desc:'Easy!Appointments add-ons: Shabbat/Yom Tov blackouts, reminders, spam.',
+      desc:'Fork of Easy!Appointments: stripped down interface, automatic blockout times, reminders, spam filter, custom links to pay and join from email.',
       url:'/crimson/', fg:13 },
     BACK,
   ]},
@@ -270,6 +271,15 @@ function compose(parts){
 }
 /* `attrs` replaces the whole attribute list, so an item row can carry its own
    class and index and become the click target across all 80 columns. */
+function wrap(text, width){
+  const out = []; let line = '';
+  for (const w of text.split(' ')){
+    if (line && (line + ' ' + w).length > width){ out.push(line); line = w; }
+    else line = line ? line + ' ' + w : w;
+  }
+  if (line) out.push(line);
+  return out;
+}
 function rowHTML(parts, attrs){
   return '<div ' + (attrs || 'class="row"') + '>' + compose(parts).map(s => {
     const bg = s.bg ? ';background:' + PAL[s.bg] : '';
@@ -345,29 +355,44 @@ function render(){
   const big = ITEMS.length <= 4 && ITEMS.every(it => it.icon);
   ITEMS.forEach((it,i) => {
     const on = i === sel;
-    const label = [{x: on ? 29 : 29, t: on ? '►' : ' ', fg:LRED, bg: on ? GREY : BLACK},
-                   {x:31, t:it.key + ' - ' + it.label, fg: on ? BLACK : LGREEN, bg: on ? GREY : BLACK}];
+    const cls = it.bold ? ' class="b"' : '';
+    /* a long label wraps onto the item's next row, indented under its text */
+    const lines = wrap(it.key + ' - ' + it.label, 47);
+    const labelRow = (n) => {
+      if (n >= lines.length) return [];
+      const t = (n ? '    ' : '') + lines[n];
+      const parts = [{x:31, t, fg: on ? BLACK : LGREEN, bg: on ? GREY : BLACK, attrs:cls}];
+      if (n === 0) parts.unshift({x:29, t: on ? '►' : ' ', fg:LRED, bg: on ? GREY : BLACK});
+      return parts;
+    };
     if (big){
       const top = 4 + i*4;
       for (let r = 0; r < 3; r++){
         const parts = [{x:22, t:it.icon[r], fg:it.fg}];
-        if (r === 1) parts.push(...label);
+        if (r >= 1) parts.push(...labelRow(r - 1));
         L[top+r] = rowHTML(SIDE(parts),
           `class="row item" data-i="${i}"` + (r === 1 ? ' role="menuitem"' : ''));
       }
     } else {
       const gaps = ITEMS.slice(0, i + 1).filter(x => x.gap).length;
       const top = 4 + (i + gaps)*2;
-      L[top] = rowHTML(SIDE([{x:26, t:'■', fg:it.fg}, ...label]),
+      L[top] = rowHTML(SIDE([{x:26, t:'■', fg:it.fg}, ...labelRow(0)]),
         `class="row item" data-i="${i}" role="menuitem"`);
+      if (lines.length > 1) L[top+1] = rowHTML(SIDE(labelRow(1)), `class="row item" data-i="${i}"`);
     }
   });
 
   /* 20  description bar */
-  const d = launching != null ? 'Loading ' + ITEMS[launching].label + ' ...' : ITEMS[sel].desc;
-  L[20] = rowHTML(SIDE([
-    {x:centred(d,0,80)-1, t:' '+d+' ', fg:BLACK, bg:GREY},
-  ]));
+  const d = launching != null ? 'Opening ' + ITEMS[launching].label + ' ...' : ITEMS[sel].desc;
+  /* a long description takes the row above as well */
+  const dl = wrap(d, 76);
+  if (dl.length > 1){
+    const w = Math.max(...dl.slice(0,2).map(x => x.length));
+    L[19] = rowHTML(SIDE([{x:centred(dl[0].padEnd(w),0,80)-1, t:' '+dl[0].padEnd(w)+' ', fg:BLACK, bg:GREY}]));
+    L[20] = rowHTML(SIDE([{x:centred(dl[1].padEnd(w),0,80)-1, t:' '+dl[1].padEnd(w)+' ', fg:BLACK, bg:GREY}]));
+  } else {
+    L[20] = rowHTML(SIDE([{x:centred(d,0,80)-1, t:' '+d+' ', fg:BLACK, bg:GREY}]));
+  }
   /* 21  rule */
   L[21] = rowHTML([{x:0,t:'├'+rep('─',78)+'┤',fg:LCYAN}]);
   /* 22  status */
