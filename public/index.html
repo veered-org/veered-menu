@@ -101,7 +101,9 @@ document.getElementById('splashart').src =
     <li><a href="breakout.html">Oversimplified Breakout</a></li>
     <li><a href="/code/trifecta/">Trifecta card game rules</a></li>
     <li><a href="/code/">Open-source code</a></li>
-    <li><a href="mailto:contact@veered.org">contact@veered.org</a></li>
+    <li><a href="https://PatentlyJewish.com">PatentlyJewish.com</a></li>
+    <li><a href="https://PatentLawNY.com">PatentLawNY.com</a></li>
+    <li><a href="mailto:support@veered.org">support@veered.org</a></li>
   </ul>
 </noscript>
 
@@ -147,29 +149,39 @@ const PAGES = [
       url:GH + 'maroon-isles-quest/', fg:10,
       icon:[' </>  ','▀ ▀ ▀ ','██████'] },
   ]},
-  { title:'Desktop & home tools', items:[
+  { title:'Desktop tools', items:[
     { key:'1', label:'COSMIC desktop tools',
       desc:'Panel word of the day, music keys, SMS & calls, screen translator, mouse.',
       url:GH + 'cosmic-tools/', fg:9,
       icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
-    { key:'2', label:'Shabbat tools',
-      desc:'Shabbat & Yom Tov TV board, and scheduling for fridges, plugs and switches.',
-      url:GH + 'shabbat-tools/', fg:14,
-      icon:['  ▲ ▲ ','  █ █ ','▀▀▀▀▀▀'] },
-    { key:'3', label:'All source code',
-      desc:'Every Veered project: readmes and source downloads. contact@veered.org',
+    { key:'2', label:'All source code',
+      desc:'Every project, its license, and why I share them. support@veered.org',
       url:'/code/', fg:7,
       icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
   ]},
-  { title:'Work & web tools', items:[
-    { key:'1', label:'Patent PDF tools',
-      desc:'Fix page sizes for USPTO Patent Center; shrink scanned prior art.',
-      url:GH + 'patent-pdf-tools/', fg:15,
-      icon:[' ▄▄▄  ',' █≡█▄ ',' ▀▀▀▀ '] },
+  { title:'Jewish life', items:[
+    { key:'1', label:'Shabbat tools',
+      desc:'Shabbos Board for Shabbos & Yom Tov; fridge, plug and switch scheduler.',
+      url:GH + 'shabbat-tools/', fg:14,
+      icon:['  ▲ ▲ ','  █ █ ','▀▀▀▀▀▀'] },
     { key:'2', label:'Community directory',
       desc:'Self-hosted phone & business directory. PHP + SQLite, moderated.',
       url:GH + 'community-directory/', fg:10,
       icon:[' ▄▄▄▄ ',' █##█ ',' ▀▀▀▀ '] },
+    { key:'3', label:'PatentlyJewish.com',
+      desc:'Writing on Jewish life and aliyah.',
+      url:'https://PatentlyJewish.com', fg:11,
+      icon:['  ▄▄  ',' ▀██▀ ','  ▀▀  '] },
+  ]},
+  { title:'Work tools', items:[
+    { key:'1', label:'PatentLawNY.com',
+      desc:'My law practice: patents and trademarks.',
+      url:'https://PatentLawNY.com', fg:15,
+      icon:[' ▄▄▄▄ ',' █TM█ ',' ▀▀▀▀ '] },
+    { key:'2', label:'Patent PDF tools',
+      desc:'Fix page sizes for USPTO Patent Center; shrink scanned prior art.',
+      url:GH + 'patent-pdf-tools/', fg:15,
+      icon:[' ▄▄▄  ',' █≡█▄ ',' ▀▀▀▀ '] },
     { key:'3', label:'Braintree checkout page',
       desc:'Drop-in payment page: enter your own Braintree keys and go.',
       url:GH + 'braintree-checkout/', fg:11,
@@ -254,8 +266,8 @@ const HELP = [
     '  H ............. this help screen',
     '  ESC ........... close this help screen',
     '',
-    '  Pages 2-4 open the free source code.',
-    '  Contact: contact@veered.org',
+    '  Pages 2-5: free source code and links.',
+    '  Contact: support@veered.org',
     '',
   ].map(t => '║' + t.padEnd(HELP_W) + '║'),
   '╚' + rep('═', HELP_W) + '╝',
@@ -324,7 +336,7 @@ function render(){
   /* 23  bottom border */
   L[23] = rowHTML([{x:0,t:'└'+rep('─',78)+'┘',fg:LCYAN}]);
   /* 24  outside the box */
-  const h = 'Press H for Help', m = 'contact@veered.org', hm = h + '   ·   ' + m;
+  const h = 'Press H for Help', m = 'support@veered.org', hm = h + '   ·   ' + m;
   const hx = centred(hm,0,80);
   L[24] = rowHTML([
     {x:hx, t:h + '   ·   ', fg:GREEN},
@@ -396,7 +408,7 @@ scr.addEventListener('mouseover', e => {
 });
 scr.addEventListener('click', e => {
   if (e.target.closest('.pager')){ turn(1); return; }
-  if (e.target.closest('.mail')){ location.href = 'mailto:contact@veered.org'; return; }
+  if (e.target.closest('.mail')){ location.href = 'mailto:support@veered.org'; return; }
   const t = e.target.closest('.item');
   if (t && !helpOpen) run(+t.dataset.i);
 });
