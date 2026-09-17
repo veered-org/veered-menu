@@ -26,7 +26,7 @@ row of bricks launches that game.
 
 The games themselves live in their own repositories:
 [merlot](https://github.com/veered-org/merlot),
-[swarm](https://github.com/veered-org/swarm) and
+[swarm](https://github.com/veered-org/carmine-swarm) and
 [maroon-isles-quest](https://github.com/veered-org/maroon-isles-quest).
 
 ## Run it yourself
