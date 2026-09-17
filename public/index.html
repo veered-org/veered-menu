@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Veered — Free Two-Player Browser Games">
 <meta property="og:description" content="A retro DOS-style launcher for a small collection of free two-player browser games. No download, no sign-up.">
-<meta property="og:image" content="https://veered.org/splash.webp">
+<meta property="og:image" content="https://veered.org/splash-castle.webp">
 <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -87,7 +87,7 @@
 <script>
 /* One of the title arts, picked per load. Inline and right beside the element
    so the fetch starts while the rest of the page is still parsing. */
-var SPLASHES = ['splash.webp', 'splash-castle.webp'];
+var SPLASHES = ['splash-castle.webp'];
 document.getElementById('splashart').src =
   SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
 </script>
@@ -130,6 +130,9 @@ const MENUS = {
     { label:'Work tools  ►',
       desc:'PatentLawNY.com, patent PDF tools, payments, consultation booking.',
       open:'work', fg:15 },
+    { label:'Modern website please!', gap:true,
+      desc:'The same games and tools on a regular, modern web page.',
+      url:'/modern/', fg:14 },
   ]},
   games: { title:'Multiplayer Games', items:[
     { label:'Merlot: Dialogue (v0.44)',
@@ -353,7 +356,8 @@ function render(){
           `class="row item" data-i="${i}"` + (r === 1 ? ' role="menuitem"' : ''));
       }
     } else {
-      const top = 4 + i*2;
+      const gaps = ITEMS.slice(0, i + 1).filter(x => x.gap).length;
+      const top = 4 + (i + gaps)*2;
       L[top] = rowHTML(SIDE([{x:26, t:'■', fg:it.fg}, ...label]),
         `class="row item" data-i="${i}" role="menuitem"`);
     }
@@ -413,8 +417,14 @@ function run(i){
   if (launching != null) return;
   if (ITEMS[i].open){ sel = i; enterSub(ITEMS[i].open); return; }
   if (ITEMS[i].back){ leaveSub(); return; }
-  launching = i; sel = i; render();
-  setTimeout(() => { location.href = ITEMS[i].url; }, 350);
+  /* every destination opens in a new tab, so the menu stays where it was.
+     window.open runs inside the key/click handler to keep the user gesture. */
+  sel = i;
+  const w = window.open(ITEMS[i].url, '_blank');
+  if (!w) { location.href = ITEMS[i].url; return; }   /* pop-up blocked: go there here instead */
+  try { w.opener = null; } catch (e) {}
+  launching = i; render();
+  setTimeout(() => { launching = null; render(); }, 600);
 }
 function move(d){
   if (helpOpen) return;
@@ -440,7 +450,15 @@ addEventListener('keydown', e => {
    mouseover replaced the element under the cursor, which makes the browser
    fire mouseover again on the fresh one — a repaint loop that destroyed the
    mousedown target before any mouseup could land. */
+let keyboardLead = false, lastMouse = null;
+addEventListener('keydown', () => { keyboardLead = true; }, true);
+addEventListener('mousemove', e => {
+  const p = e.clientX + ',' + e.clientY;
+  if (lastMouse !== null && p !== lastMouse) keyboardLead = false;
+  lastMouse = p;
+});
 scr.addEventListener('mouseover', e => {
+  if (keyboardLead) return;          /* the keyboard has the selection until the mouse moves */
   const t = e.target.closest('.item');
   if (t && !helpOpen && launching == null && +t.dataset.i !== sel){
     sel = +t.dataset.i; render();
