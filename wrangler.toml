@@ -1,0 +1,17 @@
+name = "veered-menu"
+compatibility_date = "2026-08-08"
+
+# workers_dev keeps the *.workers.dev hostname reachable as a fallback origin.
+# Adding a [[routes]] custom_domain entry turns it off unless this is set.
+workers_dev = true
+
+# Assets-only Worker: no `main`, so every request is served straight from public/.
+[assets]
+directory = "./public"
+
+# Custom Domain (not a route): Cloudflare creates the DNS record and the
+# certificate itself.
+# To serve on your own domain, uncomment and change the hostname:
+# [[routes]]
+# pattern = "games.example.com"
+# custom_domain = true

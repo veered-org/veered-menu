@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Veered Multiplayer Menu — Free Two-Player Browser Games</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="A retro DOS-style launcher for a small collection of free two-player games that run in your browser. No download and no sign-up — pick one and share the link.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veered — Free Two-Player Browser Games">
+<meta property="og:description" content="A retro DOS-style launcher for a small collection of free two-player browser games. No download, no sign-up.">
+<meta property="og:image" content="https://veered.org/splash.webp">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:#000;overflow:hidden}
+  body{
+    font-family:"DejaVu Sans Mono","Liberation Mono","Consolas","Menlo","Courier New",monospace;
+    color:#AAAAAA;
+  }
+
+  /* the CRT the text screen sits in */
+  #crt{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:#000;overflow:hidden;
+  }
+  #scr{
+    white-space:pre;
+    font-variant-ligatures:none;
+    text-rendering:geometricPrecision;
+    text-shadow:0 0 4px rgba(160,255,160,.16);   /* faint phosphor bloom */
+    user-select:none;
+    cursor:default;
+  }
+  #scr .row{line-height:inherit}
+  #scr span{white-space:pre}
+  #scr .item{cursor:pointer}
+
+  /* scanlines + vignette, sized to the text cell so they never moire */
+  #crt::after, #splash::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+    background:
+      repeating-linear-gradient(to bottom,
+        rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px,
+        rgba(0,0,0,.30) 2px, rgba(0,0,0,.30) 3px),
+      radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,.7) 100%);
+  }
+
+  /* boot splash: the title art over the prompt, on the same CRT, until a key */
+  #splash{
+    position:fixed;inset:0;z-index:10;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:1em;background:#000;cursor:pointer;
+    transition:opacity .4s linear;
+  }
+  #splash.gone{opacity:0;pointer-events:none}
+  /* the art gives up the height the prompt needs, rather than the other way */
+  #splash img{max-width:100%;max-height:calc(100% - 4em);object-fit:contain}
+  #splash .press{
+    color:#FF5555;                                  /* VGA light red */
+    font-size:clamp(13px, 2.1vw, 26px);
+    letter-spacing:.12em;
+    text-shadow:0 0 6px rgba(255,85,85,.45);
+    animation:blink 1s steps(1,end) infinite;       /* hard on/off, no fade */
+  }
+  @keyframes blink{50%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){ #splash .press{animation:none} }
+
+  #meas{position:absolute;visibility:hidden;white-space:pre;font-size:100px;left:-9999px;top:0}
+
+  /* plain-HTML fallback for no-JS / screen readers */
+  noscript ul{color:#55FF55;font-size:14px;line-height:2}
+  noscript a{color:#55FF55}
+</style>
+</head>
+<body>
+
+<div id="crt">
+  <div id="scr" role="menu" aria-label="Multiplayer menu"></div>
+</div>
+<div id="splash">
+  <img id="splashart" alt="Veered" fetchpriority="high">
+  <div class="press">Press Any Key to Continue</div>
+</div>
+<script>
+/* One of the title arts, picked per load. Inline and right beside the element
+   so the fetch starts while the rest of the page is still parsing. */
+var SPLASHES = ['splash.webp', 'splash-castle.webp'];
+document.getElementById('splashart').src =
+  SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
+</script>
+<div id="meas">MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM</div>
+
+<noscript>
+  <ul>
+    <li><a href="https://swarm.veered.org">1 &ndash; Swarm Command (v0.1)</a></li>
+    <li><a href="https://merlot.veered.org">2 &ndash; Merlot Dialogue (v0.21)</a></li>
+    <li><a href="https://quest.veered.org">3 &ndash; Maroon Isles Quest</a></li>
+    <li><a href="breakout.html">4 &ndash; Oversimplified Breakout</a></li>
+  </ul>
+</noscript>
+
+<script>
+/* ------------------------------------------------------------------ *
+ *  Menu contents.  Change `url` here and everything follows.          *
+ * ------------------------------------------------------------------ */
+const ITEMS = [
+  { key:'1', label:'Swarm Command (v0.1)',
+    desc:'1v1 real-time swarm battle. Drag-select and send them at the towers.',
+    url:'https://swarm.veered.org', fg:14,
+    icon:['  · ▄▄',' °  ▓▓','  · ▓▓'] },
+
+  { key:'2', label:'Merlot Dialogue (v0.21)',
+    desc:'Up to 4v4 tank command. Bots take any seat nobody has claimed.',
+    url:'https://merlot.veered.org', fg:11,
+    icon:['  ▄▄  ',' ███══','▀▀▀▀▀ '] },
+
+  { key:'3', label:'Maroon Isles Quest',
+    desc:'Two-player co-op text adventure. Heir today, gone tomorrow.',
+    url:'https://quest.veered.org', fg:10,
+    icon:['▀ ▀ ▀ ','██████',' ▀▀▀▀ '] },
+
+  { key:'4', label:'Oversimplified Breakout',
+    desc:'A menu pretending to be a game. Break a row and it launches it.',
+    url:'breakout.html', fg:15,
+    icon:['▓▓▓▓▓▓','  °   ',' ▄▄▄▄ '] },
+];
+
+/* ------------------------- the text screen ------------------------- */
+const COLS = 80, ROWS = 25;
+/* IBM VGA 16-colour palette */
+const PAL = ['#000000','#0000AA','#00AA00','#00AAAA','#AA0000','#AA00AA','#AA5500','#AAAAAA',
+             '#555555','#5555FF','#55FF55','#55FFFF','#FF5555','#FF55FF','#FFFF55','#FFFFFF'];
+
+const BLACK=0, GREEN=2, RED=4, BROWN=6, GREY=7, LGREEN=10, LCYAN=11, LRED=12, WHITE=15;
+
+const scr  = document.getElementById('scr');
+const meas = document.getElementById('meas');
+
+let sel = 0, helpOpen = false, launching = null, splashUp = false;
+
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const rep = (c,n) => n > 0 ? c.repeat(n) : '';
+
+/* Paint segments into an 80-cell buffer, in order, later writes winning —
+   a background fill followed by text on top has to overwrite, not append,
+   or the row grows past 80 columns. Then merge equal-attribute runs. */
+function compose(parts){
+  const buf = Array.from({length:COLS}, () => ({ch:' ',fg:GREY,bg:BLACK,attrs:''}));
+  for (const p of parts){
+    for (let i = 0; i < p.t.length; i++){
+      const x = p.x + i;
+      if (x < 0 || x >= COLS) continue;
+      buf[x] = {ch:p.t[i], fg:p.fg==null?GREY:p.fg, bg:p.bg||BLACK, attrs:p.attrs||''};
+    }
+  }
+  const out = [];
+  for (const c of buf){
+    const last = out[out.length-1];
+    if (last && last.fg===c.fg && last.bg===c.bg && last.attrs===c.attrs) last.t += c.ch;
+    else out.push({t:c.ch, fg:c.fg, bg:c.bg, attrs:c.attrs});
+  }
+  return out;
+}
+/* `attrs` replaces the whole attribute list, so an item row can carry its own
+   class and index and become the click target across all 80 columns. */
+function rowHTML(parts, attrs){
+  return '<div ' + (attrs || 'class="row"') + '>' + compose(parts).map(s => {
+    const bg = s.bg ? ';background:' + PAL[s.bg] : '';
+    return `<span${s.attrs||''} style="color:${PAL[s.fg==null?GREY:s.fg]}${bg}">${esc(s.t)}</span>`;
+  }).join('') + '</div>';
+}
+const centred = (t, x0, w) => x0 + Math.floor((w - t.length)/2);
+
+/* ------------------------------ chrome ----------------------------- */
+const TITLE = 'Veered Multiplayer Menu';
+const SIDE  = c => [{x:0,t:'│',fg:LCYAN},{x:79,t:'│',fg:LCYAN}].concat(c||[]);
+
+function clockLine(){
+  const d = new Date();
+  const date = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  let h = d.getHours(); const ap = h < 12 ? 'am' : 'pm'; h = h % 12 || 12;
+  const p = n => String(n).padStart(2,'0');
+  return `${date}  ${h}:${p(d.getMinutes())}:${p(d.getSeconds())} ${ap}`;
+}
+
+/* built with padEnd so the right border can't drift out of column */
+const HELP_W = 50;
+const HELP = [
+  '╔══ Help ' + rep('═', HELP_W - 8) + '╗',
+  ...[
+    '',
+    '  UP / DOWN ..... move the selection bar',
+    '  ENTER ......... run the highlighted item',
+    '  1 - 4 ......... run that item directly',
+    '  H ............. this help screen',
+    '  ESC ........... close this help screen',
+    '',
+    '  The games run on the web now, so they answer',
+    '  from anywhere.',
+    '',
+  ].map(t => '║' + t.padEnd(HELP_W) + '║'),
+  '╚' + rep('═', HELP_W) + '╝',
+];
+
+/* Its own row so the clock can be re-drawn on its own. A full render() every
+   second replaces every item element, and a click whose mousedown target is
+   detached before the mouseup never fires a click event at all. */
+function statusRow(){
+  return rowHTML(SIDE([
+    {x:2,  t:clockLine(), fg:RED},
+    {x:64, t:'Memory: 542 K', fg:RED},
+  ]), 'class="row" id="statusrow"');
+}
+
+function render(){
+  const L = [];
+
+  /* 0  top border */
+  L[0] = rowHTML([{x:0,t:'┌'+rep('─',78)+'┐',fg:LCYAN}]);
+  /* 1  title bar */
+  L[1] = rowHTML(SIDE([
+    {x:4,  t:rep(' ',72), fg:WHITE, bg:RED},
+    {x:centred(TITLE,4,72), t:TITLE, fg:WHITE, bg:RED},
+  ]));
+  /* 2  rule */
+  L[2] = rowHTML([{x:0,t:'├'+rep('─',78)+'┤',fg:LCYAN}]);
+  /* 3  menu counter */
+  L[3] = rowHTML(SIDE([{x:64,t:'MENU 1 OF 1',fg:BROWN}]));
+
+  /* 4..19  four items of three rows plus a spacer, the last spacer
+     keeping item 4 off the description bar */
+  ITEMS.forEach((it,i) => {
+    const top = 4 + i*4, on = i === sel;
+    for (let r = 0; r < 3; r++){
+      const parts = [{x:22, t:it.icon[r], fg:it.fg}];
+      if (r === 1){
+        if (on) parts.push({x:29, t:'►', fg:LRED, bg:GREY});
+        parts.push({
+          x:31, t:it.key + ' - ' + it.label,
+          fg: on ? BLACK : LGREEN, bg: on ? GREY : BLACK,
+        });
+      }
+      /* the whole row is the hit target, not just the label glyphs: aiming at
+         the icon or the highlight bar is the natural place to click */
+      L[top+r] = rowHTML(SIDE(parts),
+        `class="row item" data-i="${i}"` + (r === 1 ? ' role="menuitem"' : ''));
+    }
+    L[top+3] = rowHTML(SIDE());       /* spacer row after each item */
+  });
+
+  /* 20  description bar */
+  const d = launching != null ? 'Loading ' + ITEMS[launching].label + ' ...' : ITEMS[sel].desc;
+  L[20] = rowHTML(SIDE([
+    {x:centred(d,0,80)-1, t:' '+d+' ', fg:BLACK, bg:GREY},
+  ]));
+  /* 21  rule */
+  L[21] = rowHTML([{x:0,t:'├'+rep('─',78)+'┤',fg:LCYAN}]);
+  /* 22  status */
+  L[22] = statusRow();
+  /* 23  bottom border */
+  L[23] = rowHTML([{x:0,t:'└'+rep('─',78)+'┘',fg:LCYAN}]);
+  /* 24  outside the box */
+  const h = 'Press H for Help';
+  L[24] = rowHTML([{x:centred(h,0,80), t:h, fg:GREEN}]);
+
+  if (helpOpen) HELP.forEach((t,i) => {
+    L[6+i] = rowHTML([{x:14, t, fg:WHITE, bg:1}]);
+  });
+
+  scr.innerHTML = L.join('');
+}
+
+/* --------------------------- fit to screen -------------------------- */
+function fit(){
+  /* measure the font's real advance so the grid is exact in any font */
+  const k = meas.getBoundingClientRect().width / 80 / 100;      /* em per char */
+  const u = Math.min(innerWidth*0.98 / COLS, innerHeight*0.98 / (ROWS*16/9));
+  scr.style.fontSize   = (u / k) + 'px';
+  scr.style.lineHeight = (u * 16/9) + 'px';
+}
+addEventListener('resize', fit);
+/* the first fit() can run before the font is resolved or before the window
+   has settled, so re-fit on both and watch the viewport thereafter */
+addEventListener('load', fit);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
+
+/* ------------------------------ actions ----------------------------- */
+function run(i){
+  if (launching != null) return;
+  launching = i; sel = i; render();
+  setTimeout(() => { location.href = ITEMS[i].url; }, 350);
+}
+function move(d){
+  if (helpOpen) return;
+  sel = (sel + d + ITEMS.length) % ITEMS.length;
+  render();
+}
+
+addEventListener('keydown', e => {
+  if (splashUp) return;                 /* the splash owns the keyboard first */
+  if (e.key === 'ArrowDown'){ move(1);  e.preventDefault(); return; }
+  if (e.key === 'ArrowUp'){   move(-1); e.preventDefault(); return; }
+  if (e.key === 'Escape'){    if (helpOpen){ helpOpen = false; render(); } return; }
+  if (e.key === 'h' || e.key === 'H'){ helpOpen = !helpOpen; render(); return; }
+  if (e.key === 'Enter' || e.key === ' '){ if (!helpOpen) run(sel); e.preventDefault(); return; }
+  const i = ITEMS.findIndex(x => x.key === e.key);
+  if (i >= 0 && !helpOpen) run(i);
+});
+
+/* Only re-render when the selection actually moves. Rendering on every
+   mouseover replaced the element under the cursor, which makes the browser
+   fire mouseover again on the fresh one — a repaint loop that destroyed the
+   mousedown target before any mouseup could land. */
+scr.addEventListener('mouseover', e => {
+  const t = e.target.closest('.item');
+  if (t && !helpOpen && launching == null && +t.dataset.i !== sel){
+    sel = +t.dataset.i; render();
+  }
+});
+scr.addEventListener('click', e => {
+  const t = e.target.closest('.item');
+  if (t && !helpOpen) run(+t.dataset.i);
+});
+
+/* Coming back from a game restores this page from the bfcache with `launching`
+   still set, which leaves the bar stuck on "Loading ..." and makes run() a
+   no-op. Clear it every time the page is shown, restored or not. */
+addEventListener('pageshow', () => { launching = null; fit(); render(); });
+
+fit(); render();
+/* clock only — see statusRow() */
+setInterval(() => {
+  if (launching != null) return;
+  const el = document.getElementById('statusrow');
+  if (el) el.outerHTML = statusRow();
+}, 1000);
+
+/* ----------------------------- boot splash --------------------------- */
+/* The title art holds the screen until somebody presses a key or clicks —
+   no timer. Every load gets one, and which of the arts it is was drawn above.
+   Coming back from a game is a bfcache restore, which doesn't re-run this, so
+   the splash only replays on a real load. */
+(function(){
+  const splash = document.getElementById('splash');
+  let done = false;
+  splashUp = true;
+  function dismiss(){
+    if (done) return;
+    done = true;
+    splashUp = false;
+    removeEventListener('keydown', skip, true);
+    splash.classList.add('gone');
+    setTimeout(() => splash.remove(), 600);
+  }
+  /* Capture on window so the key that skips the splash is swallowed before it
+     reaches the menu and launches a game by accident. The menu's own handler
+     checks `splashUp` as well: capture-before-bubble only holds while the event
+     has a path to travel, and the flag doesn't depend on that.
+
+     Enter is the exception. The splash is on every load now, so swallowing it
+     meant the first Enter on a fresh page only cleared the art and the menu
+     looked deaf. Enter starts the highlighted game instead.
+
+     It calls run() itself rather than letting the event through to the menu's
+     handler: when a keydown's target is the window (which is what a synthetic
+     dispatch does) there is no capture-then-bubble, every window listener runs
+     in registration order, and the menu's handler — registered first — would
+     see `splashUp` still true and ignore it. Calling run() here does not care
+     how the event arrived. */
+  function skip(e){
+    e.preventDefault();
+    e.stopPropagation();
+    dismiss();
+    if (e.key === 'Enter') run(sel);
+  }
+  addEventListener('keydown', skip, true);
+
+  /* A click on the splash only ever dismisses it. Do NOT give the mouse the
+     carve-out Enter has: Enter is aimed at one known item (the highlighted
+     one), but a click lands wherever the pointer happens to be, and the menu
+     rows span the full width and most of the height. Launching whatever sat
+     under the pointer meant "Press Any Key to Continue" dropped you straight
+     into a game you never picked. The art hides the menu, so a click through
+     it cannot be aimed at anything anyway. */
+  splash.addEventListener('click', dismiss);
+})();
+</script>
+</body>
+</html>
