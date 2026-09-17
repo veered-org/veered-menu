@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Veered Multiplayer Menu — Free Two-Player Browser Games</title>
+<title>Veered Multiplayer Menu — Free Browser Games and Open-Source Tools</title>
 <meta name="robots" content="noindex">
 <meta name="description" content="A retro DOS-style launcher for a small collection of free two-player games that run in your browser. No download and no sign-up — pick one and share the link.">
 <meta property="og:type" content="website">
@@ -95,10 +95,12 @@ document.getElementById('splashart').src =
 
 <noscript>
   <ul>
-    <li><a href="https://swarm.veered.org">1 &ndash; Swarm Command (v0.1)</a></li>
-    <li><a href="https://merlot.veered.org">2 &ndash; Merlot Dialogue (v0.21)</a></li>
-    <li><a href="https://quest.veered.org">3 &ndash; Maroon Isles Quest</a></li>
-    <li><a href="breakout.html">4 &ndash; Oversimplified Breakout</a></li>
+    <li><a href="https://swarm.veered.org">Swarm Command (v0.1)</a></li>
+    <li><a href="https://merlot.veered.org">Merlot Dialogue (v0.44)</a></li>
+    <li><a href="https://quest.veered.org">Maroon Isles Quest</a></li>
+    <li><a href="breakout.html">Oversimplified Breakout</a></li>
+    <li><a href="https://github.com/veered-org/trifecta">Trifecta card game rules</a></li>
+    <li><a href="https://github.com/veered-org">Open-source code on GitHub</a></li>
   </ul>
 </noscript>
 
@@ -106,27 +108,75 @@ document.getElementById('splashart').src =
 /* ------------------------------------------------------------------ *
  *  Menu contents.  Change `url` here and everything follows.          *
  * ------------------------------------------------------------------ */
-const ITEMS = [
-  { key:'1', label:'Swarm Command (v0.1)',
-    desc:'1v1 real-time swarm battle. Drag-select and send them at the towers.',
-    url:'https://swarm.veered.org', fg:14,
-    icon:['  · ▄▄',' °  ▓▓','  · ▓▓'] },
-
-  { key:'2', label:'Merlot Dialogue (v0.21)',
-    desc:'Up to 4v4 tank command. Bots take any seat nobody has claimed.',
-    url:'https://merlot.veered.org', fg:11,
-    icon:['  ▄▄  ',' ███══','▀▀▀▀▀ '] },
-
-  { key:'3', label:'Maroon Isles Quest',
-    desc:'Two-player co-op text adventure. Heir today, gone tomorrow.',
-    url:'https://quest.veered.org', fg:10,
-    icon:['▀ ▀ ▀ ','██████',' ▀▀▀▀ '] },
-
-  { key:'4', label:'Oversimplified Breakout',
-    desc:'A menu pretending to be a game. Break a row and it launches it.',
-    url:'breakout.html', fg:15,
-    icon:['▓▓▓▓▓▓','  °   ',' ▄▄▄▄ '] },
+const GH = 'https://github.com/veered-org/';
+const PAGES = [
+  { title:'Games', items:[
+    { key:'1', label:'Swarm Command (v0.1)',
+      desc:'1v1 real-time swarm battle. Drag-select and send them at the towers.',
+      url:'https://swarm.veered.org', fg:14,
+      icon:['  · ▄▄',' °  ▓▓','  · ▓▓'] },
+    { key:'2', label:'Merlot Dialogue (v0.44)',
+      desc:'1 to 12 players, team tank command. Bots take any seat nobody claims.',
+      url:'https://merlot.veered.org', fg:11,
+      icon:['  ▄▄  ',' ███══','▀▀▀▀▀ '] },
+    { key:'3', label:'Maroon Isles Quest',
+      desc:'Two-player co-op text adventure parody. Hair today, bald tomorrow.',
+      url:'https://quest.veered.org', fg:10,
+      icon:['▀ ▀ ▀ ','██████',' ▀▀▀▀ '] },
+    { key:'4', label:'Oversimplified Breakout',
+      desc:'A menu pretending to be a game. Break a row and it launches it.',
+      url:'breakout.html', fg:15,
+      icon:['▓▓▓▓▓▓','  °   ',' ▄▄▄▄ '] },
+  ]},
+  { title:'Card game & game source', items:[
+    { key:'1', label:'Trifecta (rules)',
+      desc:'War, Ratscrew and 1-2-3-4 chained together. Online version in the works.',
+      url:GH + 'trifecta', fg:12,
+      icon:[' ┌─┐┐ ',' │♠││ ',' └─┘┘ '] },
+    { key:'2', label:'Merlot source code',
+      desc:'Cloudflare Workers + Durable Objects. Code MIT, art CC BY.',
+      url:GH + 'merlot', fg:11,
+      icon:[' </>  ','  ▄▄  ',' ███══'] },
+    { key:'3', label:'Swarm source code',
+      desc:'The 1v1 swarm battle, server and client. MIT.',
+      url:GH + 'swarm', fg:14,
+      icon:[' </>  ','  · ▄▄',' °  ▓▓'] },
+    { key:'4', label:'Maroon Isles Quest source',
+      desc:'Two-player text adventure engine with voices and consent-to-join.',
+      url:GH + 'maroon-isles-quest', fg:10,
+      icon:[' </>  ','▀ ▀ ▀ ','██████'] },
+  ]},
+  { title:'Desktop & home tools', items:[
+    { key:'1', label:'COSMIC desktop tools',
+      desc:'Panel word of the day, music keys, SMS & calls, screen translator, mouse.',
+      url:GH + 'cosmic-tools', fg:9,
+      icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
+    { key:'2', label:'Shabbat tools',
+      desc:'Shabbat & Yom Tov TV board, and scheduling for fridges, plugs and switches.',
+      url:GH + 'shabbat-tools', fg:14,
+      icon:['  ▲ ▲ ','  █ █ ','▀▀▀▀▀▀'] },
+  ]},
+  { title:'Work & web tools', items:[
+    { key:'1', label:'Patent PDF tools',
+      desc:'Fix page sizes for USPTO Patent Center; shrink scanned prior art.',
+      url:GH + 'patent-pdf-tools', fg:15,
+      icon:[' ▄▄▄  ',' █≡█▄ ',' ▀▀▀▀ '] },
+    { key:'2', label:'Community directory',
+      desc:'Self-hosted phone & business directory. PHP + SQLite, moderated.',
+      url:GH + 'community-directory', fg:10,
+      icon:[' ▄▄▄▄ ',' █##█ ',' ▀▀▀▀ '] },
+    { key:'3', label:'Braintree checkout page',
+      desc:'Drop-in payment page: enter your own Braintree keys and go.',
+      url:GH + 'braintree-checkout', fg:11,
+      icon:[' ▄▄▄▄ ',' █$$█ ',' ▀▀▀▀ '] },
+    { key:'4', label:'Everything on GitHub',
+      desc:'All Veered projects: github.com/veered-org',
+      url:'https://github.com/veered-org', fg:7,
+      icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
+  ]},
 ];
+let page = 0;
+let ITEMS = PAGES[0].items;
 
 /* ------------------------- the text screen ------------------------- */
 const COLS = 80, ROWS = 25;
@@ -195,11 +245,12 @@ const HELP = [
     '  UP / DOWN ..... move the selection bar',
     '  ENTER ......... run the highlighted item',
     '  1 - 4 ......... run that item directly',
+    '  LEFT / RIGHT .. previous / next menu page',
     '  H ............. this help screen',
     '  ESC ........... close this help screen',
     '',
-    '  The games run on the web now, so they answer',
-    '  from anywhere.',
+    '  Pages 2-4 open the free source code',
+    '  on GitHub.',
     '',
   ].map(t => '║' + t.padEnd(HELP_W) + '║'),
   '╚' + rep('═', HELP_W) + '╝',
@@ -228,10 +279,15 @@ function render(){
   /* 2  rule */
   L[2] = rowHTML([{x:0,t:'├'+rep('─',78)+'┤',fg:LCYAN}]);
   /* 3  menu counter */
-  L[3] = rowHTML(SIDE([{x:64,t:'MENU 1 OF 1',fg:BROWN}]));
+  const pg = '◄ MENU ' + (page+1) + ' OF ' + PAGES.length + ' ►';
+  L[3] = rowHTML(SIDE([
+    {x:3, t:PAGES[page].title.toUpperCase(), fg:WHITE},
+    {x:78-pg.length, t:pg, fg:BROWN, attrs:' class="pager"'},
+  ]));
 
   /* 4..19  four items of three rows plus a spacer, the last spacer
      keeping item 4 off the description bar */
+  for (let r = 4; r < 20; r++) L[r] = rowHTML(SIDE());
   ITEMS.forEach((it,i) => {
     const top = 4 + i*4, on = i === sel;
     for (let r = 0; r < 3; r++){
@@ -294,6 +350,12 @@ function run(i){
   launching = i; sel = i; render();
   setTimeout(() => { location.href = ITEMS[i].url; }, 350);
 }
+function turn(d){
+  if (helpOpen || launching != null) return;
+  page = (page + d + PAGES.length) % PAGES.length;
+  ITEMS = PAGES[page].items; sel = 0;
+  render();
+}
 function move(d){
   if (helpOpen) return;
   sel = (sel + d + ITEMS.length) % ITEMS.length;
@@ -304,6 +366,8 @@ addEventListener('keydown', e => {
   if (splashUp) return;                 /* the splash owns the keyboard first */
   if (e.key === 'ArrowDown'){ move(1);  e.preventDefault(); return; }
   if (e.key === 'ArrowUp'){   move(-1); e.preventDefault(); return; }
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'Tab' && !e.shiftKey){ turn(1);  e.preventDefault(); return; }
+  if (e.key === 'ArrowLeft'  || e.key === 'PageUp'   || e.key === 'Tab' && e.shiftKey){  turn(-1); e.preventDefault(); return; }
   if (e.key === 'Escape'){    if (helpOpen){ helpOpen = false; render(); } return; }
   if (e.key === 'h' || e.key === 'H'){ helpOpen = !helpOpen; render(); return; }
   if (e.key === 'Enter' || e.key === ' '){ if (!helpOpen) run(sel); e.preventDefault(); return; }
@@ -322,6 +386,7 @@ scr.addEventListener('mouseover', e => {
   }
 });
 scr.addEventListener('click', e => {
+  if (e.target.closest('.pager')){ turn(1); return; }
   const t = e.target.closest('.item');
   if (t && !helpOpen) run(+t.dataset.i);
 });
