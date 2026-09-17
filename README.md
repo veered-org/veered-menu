@@ -37,18 +37,22 @@ The games themselves live in their own repositories:
 [swarm](https://github.com/veered-org/carmine-swarm) and
 [maroon-isles-quest](https://github.com/veered-org/maroon-isles-quest).
 
-## Run it yourself
+## Information for nerds
 
-The site is static. Serve `public/` with any web server, for example:
+The site is static — a folder of files, nothing running behind it. Serve `public/` with
+any web server, for example:
 
 ```bash
 python3 -m http.server 8000 --directory public
 ```
 
-To deploy it as a Cloudflare Worker (assets only), use Node.js 22 or later and run
-`npm install` then `npx wrangler deploy`. To serve it on your own hostname, uncomment the
-`[[routes]]` block in `wrangler.toml`. To point the menu at your own copies of the
-games, edit the `ITEMS` array in `index.html` and the `GAMES` array in `breakout.html`.
+- **Publishing it:** with Node.js 22 or later, `npm install` then `npx wrangler deploy`
+  puts it on a free Cloudflare account (sign up at
+  [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up); a domain of your
+  own is about $10 a year if you want one).
+- **Your own hostname:** uncomment the `[[routes]]` block in `wrangler.toml`.
+- **Your own games:** edit the `ITEMS` array in `index.html` and the `GAMES` array in
+  `breakout.html`.
 
 ## Credits and licenses
 
