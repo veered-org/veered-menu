@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Veered Multiplayer Menu — Free Browser Games and Open-Source Tools</title>
+<title>Veered Menu — Free Browser Games and Open-Source Tools</title>
 <meta name="robots" content="noindex">
 <meta name="description" content="A retro DOS-style launcher for a small collection of free two-player games that run in your browser. No download and no sign-up — pick one and share the link.">
 <meta property="og:type" content="website">
@@ -111,129 +111,117 @@ document.getElementById('splashart').src =
 /* ------------------------------------------------------------------ *
  *  Menu contents.  Change `url` here and everything follows.          *
  * ------------------------------------------------------------------ */
-const PAGES = [
-  { title:'Games', items:[
-    { key:'1', label:'Merlot: Dialogue (v0.44)',
+const BACK = { key:'', label:'◄ Back', desc:'Return to the previous menu. Esc or Backspace also works.', back:true, fg:7,
+                icon:['      ',' ◄──  ','      '] };
+const MENUS = {
+  main: { title:'Main Menu', items:[
+    { label:'Merlot: Dialogue (v0.44)',
       desc:'1 to 12 players, team tank command. Bots take any seat nobody claims.',
-      url:'https://merlot.veered.org', fg:11,
-      icon:['  ▄▄  ',' ███══','▀▀▀▀▀ '] },
-    { key:'2', label:'Maroon: Isles Quest',
+      url:'https://merlot.veered.org', fg:11 },
+    { label:'Maroon: Isles Quest',
       desc:'Two-player co-op text adventure parody. Hair today, bald tomorrow.',
-      url:'https://quest.veered.org', fg:13,
-      icon:['▀ ▀ ▀ ','██████',' ▀▀▀▀ '] },
-    { key:'3', label:'Carmine: Swarm Command (v0.1)',
+      url:'https://quest.veered.org', fg:13 },
+    { label:'Carmine: Swarm Command (v0.1)',
       desc:'The prototype for Merlot: a 1v1 real-time swarm battle.',
-      url:'https://swarm.veered.org', fg:14,
-      icon:['  · ▄▄',' °  ▓▓','  · ▓▓'] },
-    { key:'4', label:'Oversimplified Breakout',
+      url:'https://swarm.veered.org', fg:14 },
+    { label:'Oversimplified Breakout',
       desc:'Break a row to launch its game. Every Veered game has a row.',
-      url:'breakout.html', fg:15,
-      icon:['▓▓▓▓▓▓','  °   ',' ▄▄▄▄ '] },
+      url:'breakout.html', fg:15 },
+    { label:'Trifecta & game source code  ►',
+      desc:'Trifecta card game rules, and the source code of every game.',
+      open:'source', fg:12 },
+    { label:'Desktop tools  ►',
+      desc:'Linux desktop tools: any Linux desktop, or COSMIC.',
+      open:'desktop', fg:9 },
+    { label:'Jewish life  ►',
+      desc:'Shabbos Board, community directory, PatentlyJewish.com.',
+      open:'jewish', fg:14 },
+    { label:'Work tools  ►',
+      desc:'PatentLawNY.com, patent PDF tools, payments, consultation booking.',
+      open:'work', fg:15 },
   ]},
-  { title:'Card game & game source', items:[
-    { key:'1', label:'Trifecta (card game)',
+  source: { title:'Trifecta & Game Source Code', items:[
+    { label:'Trifecta (card game)',
       desc:'A card game I made up. Online version in the works. Rules here.',
-      url:'/trifecta/', fg:12,
-      icon:[' ┌─┐┐ ',' │♠││ ',' └─┘┘ '] },
-    { key:'2', label:'Merlot source code',
-      desc:'Cloudflare Workers + Durable Objects. Code MIT, art CC BY.',
-      url:'/merlot/', fg:11,
-      icon:[' </>  ','  ▄▄  ',' ███══'] },
-    { key:'3', label:'Carmine (Swarm) source code',
-      desc:'The 1v1 swarm battle, server and client. MIT.',
-      url:'/carmine/', fg:14,
-      icon:[' </>  ','  · ▄▄',' °  ▓▓'] },
-    { key:'4', label:'Maroon (Isles Quest) source',
-      desc:'Two-player text adventure engine with voices and consent-to-join.',
-      url:'/maroon/', fg:10,
-      icon:[' </>  ','▀ ▀ ▀ ','██████'] },
+      url:'/trifecta/', fg:12 },
+    { label:'Merlot source code', desc:'Cloudflare Workers + Durable Objects. Code MIT, art CC BY.',
+      url:'/merlot/', fg:11 },
+    { label:'Carmine (Swarm) source code', desc:'The 1v1 swarm battle that became Merlot. MIT.',
+      url:'/carmine/', fg:14 },
+    { label:'Maroon (Isles Quest) source', desc:'Two-player text adventure engine with voices and consent-to-join.',
+      url:'/maroon/', fg:13 },
+    { label:'All source code', desc:'Every project, its license, and why I share them. support@veered.org',
+      url:'/code/', fg:7 },
+    BACK,
   ]},
-  { title:'Desktop tools', items:[
-    { key:'1', label:'Any Linux desktop  ►',
+  desktop: { title:'Desktop Tools', items:[
+    { label:'Any Linux desktop  ►',
       desc:'Music player, SMS & calls, mouse button remapper.',
-      open:'linux', fg:10,
-      icon:['  ▄▄  ',' ▐▀▀▌ ',' ▀▀▀▀ '] },
-    { key:'2', label:'COSMIC desktop  ►',
+      open:'linux', fg:10, icon:['  ▄▄  ',' ▐▀▀▌ ',' ▀▀▀▀ '] },
+    { label:'COSMIC desktop  ►',
       desc:'Panel labels, screen translator, KDE Connect fix. For Pop!_OS COSMIC.',
-      open:'cosmic', fg:9,
-      icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
-    { key:'3', label:'All source code',
+      open:'cosmic', fg:9, icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
+    { label:'All source code',
       desc:'Every project, its license, and why I share them. support@veered.org',
-      url:'/code/', fg:7,
-      icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
+      url:'/code/', fg:7, icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
+    BACK,
   ]},
-  { title:'Jewish life', items:[
-    { key:'1', label:'Flame: Shabbos Board',
-      desc:'Shabbos Board for Shabbos & Yom Tov; fridge, plug and switch scheduler.',
-      url:'/flame/', fg:14,
-      icon:['  ▲ ▲ ','  █ █ ','▀▀▀▀▀▀'] },
-    { key:'2', label:'Terracotta: community directory',
-      desc:'Self-hosted phone & business directory. PHP + SQLite, moderated.',
-      url:'/terracotta/', fg:10,
-      icon:[' ▄▄▄▄ ',' █##█ ',' ▀▀▀▀ '] },
-    { key:'3', label:'PatentlyJewish.com',
-      desc:'Writing on Jewish life and aliyah.',
-      url:'https://PatentlyJewish.com', fg:11,
-      icon:['  ▄▄  ',' ▀██▀ ','  ▀▀  '] },
-  ]},
-  { title:'Work tools', items:[
-    { key:'1', label:'PatentLawNY.com',
-      desc:'My law practice: patents and trademarks.',
-      url:'https://PatentLawNY.com', fg:15,
-      icon:[' ▄▄▄▄ ',' █TM█ ',' ▀▀▀▀ '] },
-    { key:'2', label:'Vermilion: patent PDF tools',
-      desc:'Fix page sizes for USPTO Patent Center; shrink scanned prior art.',
-      url:'/vermilion/', fg:15,
-      icon:[' ▄▄▄  ',' █≡█▄ ',' ▀▀▀▀ '] },
-    { key:'3', label:'Redwood: Braintree checkout',
-      desc:'Drop-in payment page: enter your own Braintree keys and go.',
-      url:'/redwood/', fg:11,
-      icon:[' ▄▄▄▄ ',' █$$█ ',' ▀▀▀▀ '] },
-    { key:'4', label:'Crimson: consultation booking',
-      desc:'Easy!Appointments add-ons: Shabbat/Yom Tov blackouts, reminders, spam.',
-      url:'/crimson/', fg:13,
-      icon:[' ▄▄▄▄ ',' █▒▒█ ',' ▀▀▀▀ '] },
-  ]},
-];
-const SUBS = {
-  linux: { title:'Desktop tools ► Any Linux', items:[
-    { key:'1', label:'Cardinal: music player',
+  linux: { title:'Desktop Tools ► Any Linux', items:[
+    { label:'Cardinal: music player',
       desc:'Shuffle any music folder, with media keys and resume. Any Linux desktop.',
-      url:'/cardinal/', fg:12,
-      icon:['  ▄█  ',' ▐██▌ ','  ▀▀  '] },
-    { key:'2', label:'Cherry: SMS & calls',
+      url:'/cardinal/', fg:12, icon:['  ▄█  ',' ▐██▌ ','  ▀▀  '] },
+    { label:'Cherry: SMS & calls',
       desc:'Texts and calls with any SIP provider. Wayland desktops, not GNOME.',
-      url:'/cherry/', fg:12,
-      icon:[' ▄▄▄▄ ','█▀##▀█','▀▀▀▀▀▀'] },
-    { key:'3', label:'Rufous: mouse button remapper',
+      url:'/cherry/', fg:12, icon:[' ▄▄▄▄ ','█▀##▀█','▀▀▀▀▀▀'] },
+    { label:'Rufous: mouse button remapper',
       desc:'Map extra mouse buttons to keys, shortcuts and commands. Any Linux.',
-      url:'/rufous/', fg:6,
-      icon:['  ▄▄  ',' █▌▐█ ',' ▀██▀ '] },
-    { key:'4', label:'◄ Back to Desktop tools',
-      desc:'Or press Esc.', back:true, fg:7,
-      icon:['      ',' ◄──  ','      '] },
+      url:'/rufous/', fg:6, icon:['  ▄▄  ',' █▌▐█ ',' ▀██▀ '] },
+    BACK,
   ]},
-  cosmic: { title:'Desktop tools ► COSMIC', items:[
-    { key:'1', label:'Redshift: panel labels',
+  cosmic: { title:'Desktop Tools ► COSMIC', items:[
+    { label:'Redshift: panel labels',
       desc:'Word of the day in your language, sweat-cooling weather, world clocks.',
-      url:'/redshift/', fg:9,
-      icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
-    { key:'2', label:'Rouge: screen translator',
+      url:'/redshift/', fg:9, icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
+    { label:'Rouge: screen translator',
       desc:'Drag over text anywhere on screen and read a translation.',
-      url:'/rouge/', fg:13,
-      icon:[' ▄▄▄▄ ',' █A>█ ',' ▀▀▀▀ '] },
-    { key:'3', label:'Scarlet: KDE Connect fix',
+      url:'/rouge/', fg:13, icon:[' ▄▄▄▄ ',' █A>█ ',' ▀▀▀▀ '] },
+    { label:'Scarlet: KDE Connect fix',
       desc:"So your phone's link to COSMIC recovers by itself.",
-      url:'/scarlet/', fg:12,
-      icon:[' ▄  ▄ ',' █──█ ',' ▀  ▀ '] },
-    { key:'4', label:'◄ Back to Desktop tools',
-      desc:'Or press Esc.', back:true, fg:7,
-      icon:['      ',' ◄──  ','      '] },
+      url:'/scarlet/', fg:12, icon:[' ▄  ▄ ',' █──█ ',' ▀  ▀ '] },
+    BACK,
+  ]},
+  jewish: { title:'Jewish Life', items:[
+    { label:'Flame: Shabbos Board',
+      desc:'Shabbos Board for Shabbos & Yom Tov; fridge, plug and switch scheduler.',
+      url:'/flame/', fg:14, icon:['  ▲ ▲ ','  █ █ ','▀▀▀▀▀▀'] },
+    { label:'Terracotta: community directory',
+      desc:'Self-hosted phone & business directory. PHP + SQLite, moderated.',
+      url:'/terracotta/', fg:10, icon:[' ▄▄▄▄ ',' █##█ ',' ▀▀▀▀ '] },
+    { label:'PatentlyJewish.com',
+      desc:'Writing on Jewish life and aliyah.',
+      url:'https://PatentlyJewish.com', fg:11, icon:['  ▄▄  ',' ▀██▀ ','  ▀▀  '] },
+    BACK,
+  ]},
+  work: { title:'Work Tools', items:[
+    { label:'PatentLawNY.com', desc:'My law practice: patents and trademarks.',
+      url:'https://PatentLawNY.com', fg:15 },
+    { label:'Vermilion: patent PDF tools',
+      desc:'Fix page sizes for USPTO Patent Center; shrink scanned prior art.',
+      url:'/vermilion/', fg:15 },
+    { label:'Redwood: Braintree checkout',
+      desc:'Drop-in payment page: enter your own Braintree keys and go.',
+      url:'/redwood/', fg:11 },
+    { label:'Crimson: consultation booking',
+      desc:'Easy!Appointments add-ons: Shabbat/Yom Tov blackouts, reminders, spam.',
+      url:'/crimson/', fg:13 },
+    BACK,
   ]},
 };
-let page = 0, sub = null, subFrom = 0;
-let ITEMS = PAGES[0].items;
-function curTitle(){ return sub ? SUBS[sub].title : PAGES[page].title; }
+/* number every menu 1..n, the way AutoMenu does (up to 8 choices) */
+for (const m of Object.values(MENUS)) m.items = m.items.map((it,i) => Object.assign({}, it, {key:String(i+1)}));
+let menu = 'main', stack = [];
+let ITEMS = MENUS.main.items;
+function curTitle(){ return MENUS[menu].title; }
 
 /* ------------------------- the text screen ------------------------- */
 const COLS = 80, ROWS = 25;
@@ -282,7 +270,7 @@ function rowHTML(parts, attrs){
 const centred = (t, x0, w) => x0 + Math.floor((w - t.length)/2);
 
 /* ------------------------------ chrome ----------------------------- */
-const TITLE = 'Veered Multiplayer Menu';
+const TITLE = 'Veered Menu';
 const SIDE  = c => [{x:0,t:'│',fg:LCYAN},{x:79,t:'│',fg:LCYAN}].concat(c||[]);
 
 function clockLine(){
@@ -300,14 +288,13 @@ const HELP = [
   ...[
     '',
     '  UP / DOWN ..... move the selection bar',
-    '  ENTER ......... run the highlighted item',
-    '  1 - 4 ......... run that item directly',
-    '  LEFT / RIGHT .. previous / next menu page',
-    '  H ............. this help screen',
-    '  ESC ........... close this help screen',
+    '  ENTER ......... run the highlighted choice',
+    '  1 - 8 ......... run that choice directly',
+    '  RIGHT ......... open a menu marked ►',
+    '  ESC / LEFT .... back to the previous menu',
+    '  BACKSPACE ..... back to the previous menu',
+    '  H ............. this help screen (ESC closes)',
     '',
-    '  Pages 2-5: free source code and links.',
-    '  ESC / BKSP ... back out of a sub-menu',
     '  Contact: support@veered.org',
     '',
   ].map(t => '║' + t.padEnd(HELP_W) + '║'),
@@ -337,32 +324,33 @@ function render(){
   /* 2  rule */
   L[2] = rowHTML([{x:0,t:'├'+rep('─',78)+'┤',fg:LCYAN}]);
   /* 3  menu counter */
-  const pg = sub ? '◄ ESC: BACK' : '◄ MENU ' + (page+1) + ' OF ' + PAGES.length + ' ►';
+  const pg = stack.length ? '◄ ESC: BACK' : '';
   L[3] = rowHTML(SIDE([
     {x:3, t:curTitle().toUpperCase(), fg:WHITE},
     {x:78-pg.length, t:pg, fg:BROWN, attrs:' class="pager"'},
   ]));
 
-  /* 4..19  four items of three rows plus a spacer, the last spacer
-     keeping item 4 off the description bar */
+  /* 4..19  up to four items drawn big (three icon rows plus a spacer), or
+     up to eight drawn compact (one label row plus a spacer), as AutoMenu did */
   for (let r = 4; r < 20; r++) L[r] = rowHTML(SIDE());
+  const big = ITEMS.length <= 4 && ITEMS.every(it => it.icon);
   ITEMS.forEach((it,i) => {
-    const top = 4 + i*4, on = i === sel;
-    for (let r = 0; r < 3; r++){
-      const parts = [{x:22, t:it.icon[r], fg:it.fg}];
-      if (r === 1){
-        if (on) parts.push({x:29, t:'►', fg:LRED, bg:GREY});
-        parts.push({
-          x:31, t:it.key + ' - ' + it.label,
-          fg: on ? BLACK : LGREEN, bg: on ? GREY : BLACK,
-        });
+    const on = i === sel;
+    const label = [{x: on ? 29 : 29, t: on ? '►' : ' ', fg:LRED, bg: on ? GREY : BLACK},
+                   {x:31, t:it.key + ' - ' + it.label, fg: on ? BLACK : LGREEN, bg: on ? GREY : BLACK}];
+    if (big){
+      const top = 4 + i*4;
+      for (let r = 0; r < 3; r++){
+        const parts = [{x:22, t:it.icon[r], fg:it.fg}];
+        if (r === 1) parts.push(...label);
+        L[top+r] = rowHTML(SIDE(parts),
+          `class="row item" data-i="${i}"` + (r === 1 ? ' role="menuitem"' : ''));
       }
-      /* the whole row is the hit target, not just the label glyphs: aiming at
-         the icon or the highlight bar is the natural place to click */
-      L[top+r] = rowHTML(SIDE(parts),
-        `class="row item" data-i="${i}"` + (r === 1 ? ' role="menuitem"' : ''));
+    } else {
+      const top = 4 + i*2;
+      L[top] = rowHTML(SIDE([{x:26, t:'■', fg:it.fg}, ...label]),
+        `class="row item" data-i="${i}" role="menuitem"`);
     }
-    L[top+3] = rowHTML(SIDE());       /* spacer row after each item */
   });
 
   /* 20  description bar */
@@ -407,27 +395,20 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 if (window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
 
 /* ------------------------------ actions ----------------------------- */
-function enterSub(name, from){
-  sub = name; subFrom = from; ITEMS = SUBS[name].items; sel = 0; render();
+function enterSub(name){
+  stack.push({menu, sel}); menu = name; ITEMS = MENUS[name].items; sel = 0; render();
 }
 function leaveSub(){
-  if (!sub) return false;
-  sub = null; ITEMS = PAGES[page].items; sel = subFrom; render();
+  if (!stack.length) return false;
+  const prev = stack.pop(); menu = prev.menu; ITEMS = MENUS[menu].items; sel = prev.sel; render();
   return true;
 }
 function run(i){
   if (launching != null) return;
-  if (ITEMS[i].open){ enterSub(ITEMS[i].open, i); return; }
+  if (ITEMS[i].open){ sel = i; enterSub(ITEMS[i].open); return; }
   if (ITEMS[i].back){ leaveSub(); return; }
   launching = i; sel = i; render();
   setTimeout(() => { location.href = ITEMS[i].url; }, 350);
-}
-function turn(d){
-  if (helpOpen || launching != null) return;
-  if (sub){ if (d < 0) leaveSub(); return; }
-  page = (page + d + PAGES.length) % PAGES.length;
-  ITEMS = PAGES[page].items; sel = 0;
-  render();
 }
 function move(d){
   if (helpOpen) return;
@@ -439,8 +420,8 @@ addEventListener('keydown', e => {
   if (splashUp) return;                 /* the splash owns the keyboard first */
   if (e.key === 'ArrowDown'){ move(1);  e.preventDefault(); return; }
   if (e.key === 'ArrowUp'){   move(-1); e.preventDefault(); return; }
-  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'Tab' && !e.shiftKey){ turn(1);  e.preventDefault(); return; }
-  if (e.key === 'ArrowLeft'  || e.key === 'PageUp'   || e.key === 'Tab' && e.shiftKey){  turn(-1); e.preventDefault(); return; }
+  if (e.key === 'ArrowRight'){ if (!helpOpen && ITEMS[sel].open) run(sel); e.preventDefault(); return; }
+  if (e.key === 'ArrowLeft'){  if (!helpOpen) leaveSub(); e.preventDefault(); return; }
   if (e.key === 'Escape'){    if (helpOpen){ helpOpen = false; render(); } else leaveSub(); return; }
   if (e.key === 'Backspace'){ if (!helpOpen && leaveSub()) e.preventDefault(); return; }
   if (e.key === 'h' || e.key === 'H'){ helpOpen = !helpOpen; render(); return; }
@@ -460,7 +441,7 @@ scr.addEventListener('mouseover', e => {
   }
 });
 scr.addEventListener('click', e => {
-  if (e.target.closest('.pager')){ if (!leaveSub()) turn(1); return; }
+  if (e.target.closest('.pager')){ leaveSub(); return; }
   if (e.target.closest('.mail')){ location.href = 'mailto:support@veered.org'; return; }
   const t = e.target.closest('.item');
   if (t && !helpOpen) run(+t.dataset.i);
