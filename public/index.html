@@ -36,7 +36,7 @@
   }
   #scr .row{line-height:inherit}
   #scr span{white-space:pre}
-  #scr .item{cursor:pointer}
+  #scr .item,#scr .mail,#scr .pager{cursor:pointer}
 
   /* scanlines + vignette, sized to the text cell so they never moire */
   #crt::after, #splash::after{
@@ -99,8 +99,9 @@ document.getElementById('splashart').src =
     <li><a href="https://merlot.veered.org">Merlot Dialogue (v0.44)</a></li>
     <li><a href="https://quest.veered.org">Maroon Isles Quest</a></li>
     <li><a href="breakout.html">Oversimplified Breakout</a></li>
-    <li><a href="https://github.com/veered-org/trifecta">Trifecta card game rules</a></li>
-    <li><a href="https://github.com/veered-org">Open-source code on GitHub</a></li>
+    <li><a href="/code/trifecta/">Trifecta card game rules</a></li>
+    <li><a href="/code/">Open-source code</a></li>
+    <li><a href="mailto:contact@veered.org">contact@veered.org</a></li>
   </ul>
 </noscript>
 
@@ -108,7 +109,7 @@ document.getElementById('splashart').src =
 /* ------------------------------------------------------------------ *
  *  Menu contents.  Change `url` here and everything follows.          *
  * ------------------------------------------------------------------ */
-const GH = 'https://github.com/veered-org/';
+const GH = '/code/';
 const PAGES = [
   { title:'Games', items:[
     { key:'1', label:'Swarm Command (v0.1)',
@@ -131,47 +132,47 @@ const PAGES = [
   { title:'Card game & game source', items:[
     { key:'1', label:'Trifecta (rules)',
       desc:'War, Ratscrew and 1-2-3-4 chained together. Online version in the works.',
-      url:GH + 'trifecta', fg:12,
+      url:GH + 'trifecta/', fg:12,
       icon:[' ┌─┐┐ ',' │♠││ ',' └─┘┘ '] },
     { key:'2', label:'Merlot source code',
       desc:'Cloudflare Workers + Durable Objects. Code MIT, art CC BY.',
-      url:GH + 'merlot', fg:11,
+      url:GH + 'merlot/', fg:11,
       icon:[' </>  ','  ▄▄  ',' ███══'] },
     { key:'3', label:'Swarm source code',
       desc:'The 1v1 swarm battle, server and client. MIT.',
-      url:GH + 'swarm', fg:14,
+      url:GH + 'swarm/', fg:14,
       icon:[' </>  ','  · ▄▄',' °  ▓▓'] },
     { key:'4', label:'Maroon Isles Quest source',
       desc:'Two-player text adventure engine with voices and consent-to-join.',
-      url:GH + 'maroon-isles-quest', fg:10,
+      url:GH + 'maroon-isles-quest/', fg:10,
       icon:[' </>  ','▀ ▀ ▀ ','██████'] },
   ]},
   { title:'Desktop & home tools', items:[
     { key:'1', label:'COSMIC desktop tools',
       desc:'Panel word of the day, music keys, SMS & calls, screen translator, mouse.',
-      url:GH + 'cosmic-tools', fg:9,
+      url:GH + 'cosmic-tools/', fg:9,
       icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
     { key:'2', label:'Shabbat tools',
       desc:'Shabbat & Yom Tov TV board, and scheduling for fridges, plugs and switches.',
-      url:GH + 'shabbat-tools', fg:14,
+      url:GH + 'shabbat-tools/', fg:14,
       icon:['  ▲ ▲ ','  █ █ ','▀▀▀▀▀▀'] },
   ]},
   { title:'Work & web tools', items:[
     { key:'1', label:'Patent PDF tools',
       desc:'Fix page sizes for USPTO Patent Center; shrink scanned prior art.',
-      url:GH + 'patent-pdf-tools', fg:15,
+      url:GH + 'patent-pdf-tools/', fg:15,
       icon:[' ▄▄▄  ',' █≡█▄ ',' ▀▀▀▀ '] },
     { key:'2', label:'Community directory',
       desc:'Self-hosted phone & business directory. PHP + SQLite, moderated.',
-      url:GH + 'community-directory', fg:10,
+      url:GH + 'community-directory/', fg:10,
       icon:[' ▄▄▄▄ ',' █##█ ',' ▀▀▀▀ '] },
     { key:'3', label:'Braintree checkout page',
       desc:'Drop-in payment page: enter your own Braintree keys and go.',
-      url:GH + 'braintree-checkout', fg:11,
+      url:GH + 'braintree-checkout/', fg:11,
       icon:[' ▄▄▄▄ ',' █$$█ ',' ▀▀▀▀ '] },
-    { key:'4', label:'Everything on GitHub',
-      desc:'All Veered projects: github.com/veered-org',
-      url:'https://github.com/veered-org', fg:7,
+    { key:'4', label:'All source code',
+      desc:'Every Veered project: readmes and source downloads. contact@veered.org',
+      url:'/code/', fg:7,
       icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
   ]},
 ];
@@ -249,8 +250,8 @@ const HELP = [
     '  H ............. this help screen',
     '  ESC ........... close this help screen',
     '',
-    '  Pages 2-4 open the free source code',
-    '  on GitHub.',
+    '  Pages 2-4 open the free source code.',
+    '  Contact: contact@veered.org',
     '',
   ].map(t => '║' + t.padEnd(HELP_W) + '║'),
   '╚' + rep('═', HELP_W) + '╝',
@@ -319,8 +320,12 @@ function render(){
   /* 23  bottom border */
   L[23] = rowHTML([{x:0,t:'└'+rep('─',78)+'┘',fg:LCYAN}]);
   /* 24  outside the box */
-  const h = 'Press H for Help';
-  L[24] = rowHTML([{x:centred(h,0,80), t:h, fg:GREEN}]);
+  const h = 'Press H for Help', m = 'contact@veered.org', hm = h + '   ·   ' + m;
+  const hx = centred(hm,0,80);
+  L[24] = rowHTML([
+    {x:hx, t:h + '   ·   ', fg:GREEN},
+    {x:hx + h.length + 7, t:m, fg:GREEN, attrs:' class="mail" title="Email Veered"'},
+  ]);
 
   if (helpOpen) HELP.forEach((t,i) => {
     L[6+i] = rowHTML([{x:14, t, fg:WHITE, bg:1}]);
@@ -387,6 +392,7 @@ scr.addEventListener('mouseover', e => {
 });
 scr.addEventListener('click', e => {
   if (e.target.closest('.pager')){ turn(1); return; }
+  if (e.target.closest('.mail')){ location.href = 'mailto:contact@veered.org'; return; }
   const t = e.target.closest('.item');
   if (t && !helpOpen) run(+t.dataset.i);
 });
