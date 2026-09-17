@@ -149,11 +149,15 @@ const PAGES = [
       icon:[' </>  ','▀ ▀ ▀ ','██████'] },
   ]},
   { title:'Desktop tools', items:[
-    { key:'1', label:'Redshift: COSMIC desktop tools',
-      desc:'Panel word of the day, music keys, SMS & calls, screen translator, mouse.',
-      url:'/redshift/', fg:9,
+    { key:'1', label:'Any Linux desktop  ►',
+      desc:'Music player, SMS & calls, mouse button remapper.',
+      open:'linux', fg:10,
+      icon:['  ▄▄  ',' ▐▀▀▌ ',' ▀▀▀▀ '] },
+    { key:'2', label:'COSMIC desktop  ►',
+      desc:'Panel labels, screen translator, KDE Connect fix. For Pop!_OS COSMIC.',
+      open:'cosmic', fg:9,
       icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
-    { key:'2', label:'All source code',
+    { key:'3', label:'All source code',
       desc:'Every project, its license, and why I share them. support@veered.org',
       url:'/code/', fg:7,
       icon:[' </>  ',' ▄▄▄▄ ',' ▀▀▀▀ '] },
@@ -191,8 +195,45 @@ const PAGES = [
       icon:[' ▄▄▄▄ ',' █▒▒█ ',' ▀▀▀▀ '] },
   ]},
 ];
-let page = 0;
+const SUBS = {
+  linux: { title:'Desktop tools ► Any Linux', items:[
+    { key:'1', label:'Cardinal: music player',
+      desc:'Shuffle any music folder, with media keys and resume. Any Linux desktop.',
+      url:'/cardinal/', fg:12,
+      icon:['  ▄█  ',' ▐██▌ ','  ▀▀  '] },
+    { key:'2', label:'Cherry: SMS & calls',
+      desc:'Texts and calls with any SIP provider. Wayland desktops, not GNOME.',
+      url:'/cherry/', fg:12,
+      icon:[' ▄▄▄▄ ','█▀##▀█','▀▀▀▀▀▀'] },
+    { key:'3', label:'Rufous: mouse button remapper',
+      desc:'Map extra mouse buttons to keys, shortcuts and commands. Any Linux.',
+      url:'/rufous/', fg:6,
+      icon:['  ▄▄  ',' █▌▐█ ',' ▀██▀ '] },
+    { key:'4', label:'◄ Back to Desktop tools',
+      desc:'Or press Esc.', back:true, fg:7,
+      icon:['      ',' ◄──  ','      '] },
+  ]},
+  cosmic: { title:'Desktop tools ► COSMIC', items:[
+    { key:'1', label:'Redshift: panel labels',
+      desc:'Word of the day in your language, sweat-cooling weather, world clocks.',
+      url:'/redshift/', fg:9,
+      icon:['▄▄▄▄▄▄','█ ▀▀ █','▀▀▀▀▀▀'] },
+    { key:'2', label:'Rouge: screen translator',
+      desc:'Drag over text anywhere on screen and read a translation.',
+      url:'/rouge/', fg:13,
+      icon:[' ▄▄▄▄ ',' █A>█ ',' ▀▀▀▀ '] },
+    { key:'3', label:'Scarlet: KDE Connect fix',
+      desc:"So your phone's link to COSMIC recovers by itself.",
+      url:'/scarlet/', fg:12,
+      icon:[' ▄  ▄ ',' █──█ ',' ▀  ▀ '] },
+    { key:'4', label:'◄ Back to Desktop tools',
+      desc:'Or press Esc.', back:true, fg:7,
+      icon:['      ',' ◄──  ','      '] },
+  ]},
+};
+let page = 0, sub = null, subFrom = 0;
 let ITEMS = PAGES[0].items;
+function curTitle(){ return sub ? SUBS[sub].title : PAGES[page].title; }
 
 /* ------------------------- the text screen ------------------------- */
 const COLS = 80, ROWS = 25;
@@ -266,6 +307,7 @@ const HELP = [
     '  ESC ........... close this help screen',
     '',
     '  Pages 2-5: free source code and links.',
+    '  ESC / BKSP ... back out of a sub-menu',
     '  Contact: support@veered.org',
     '',
   ].map(t => '║' + t.padEnd(HELP_W) + '║'),
@@ -295,9 +337,9 @@ function render(){
   /* 2  rule */
   L[2] = rowHTML([{x:0,t:'├'+rep('─',78)+'┤',fg:LCYAN}]);
   /* 3  menu counter */
-  const pg = '◄ MENU ' + (page+1) + ' OF ' + PAGES.length + ' ►';
+  const pg = sub ? '◄ ESC: BACK' : '◄ MENU ' + (page+1) + ' OF ' + PAGES.length + ' ►';
   L[3] = rowHTML(SIDE([
-    {x:3, t:PAGES[page].title.toUpperCase(), fg:WHITE},
+    {x:3, t:curTitle().toUpperCase(), fg:WHITE},
     {x:78-pg.length, t:pg, fg:BROWN, attrs:' class="pager"'},
   ]));
 
@@ -365,13 +407,24 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 if (window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
 
 /* ------------------------------ actions ----------------------------- */
+function enterSub(name, from){
+  sub = name; subFrom = from; ITEMS = SUBS[name].items; sel = 0; render();
+}
+function leaveSub(){
+  if (!sub) return false;
+  sub = null; ITEMS = PAGES[page].items; sel = subFrom; render();
+  return true;
+}
 function run(i){
   if (launching != null) return;
+  if (ITEMS[i].open){ enterSub(ITEMS[i].open, i); return; }
+  if (ITEMS[i].back){ leaveSub(); return; }
   launching = i; sel = i; render();
   setTimeout(() => { location.href = ITEMS[i].url; }, 350);
 }
 function turn(d){
   if (helpOpen || launching != null) return;
+  if (sub){ if (d < 0) leaveSub(); return; }
   page = (page + d + PAGES.length) % PAGES.length;
   ITEMS = PAGES[page].items; sel = 0;
   render();
@@ -388,7 +441,8 @@ addEventListener('keydown', e => {
   if (e.key === 'ArrowUp'){   move(-1); e.preventDefault(); return; }
   if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'Tab' && !e.shiftKey){ turn(1);  e.preventDefault(); return; }
   if (e.key === 'ArrowLeft'  || e.key === 'PageUp'   || e.key === 'Tab' && e.shiftKey){  turn(-1); e.preventDefault(); return; }
-  if (e.key === 'Escape'){    if (helpOpen){ helpOpen = false; render(); } return; }
+  if (e.key === 'Escape'){    if (helpOpen){ helpOpen = false; render(); } else leaveSub(); return; }
+  if (e.key === 'Backspace'){ if (!helpOpen && leaveSub()) e.preventDefault(); return; }
   if (e.key === 'h' || e.key === 'H'){ helpOpen = !helpOpen; render(); return; }
   if (e.key === 'Enter' || e.key === ' '){ if (!helpOpen) run(sel); e.preventDefault(); return; }
   const i = ITEMS.findIndex(x => x.key === e.key);
@@ -406,7 +460,7 @@ scr.addEventListener('mouseover', e => {
   }
 });
 scr.addEventListener('click', e => {
-  if (e.target.closest('.pager')){ turn(1); return; }
+  if (e.target.closest('.pager')){ if (!leaveSub()) turn(1); return; }
   if (e.target.closest('.mail')){ location.href = 'mailto:support@veered.org'; return; }
   const t = e.target.closest('.item');
   if (t && !helpOpen) run(+t.dataset.i);
