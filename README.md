@@ -8,6 +8,14 @@ The front page of veered.org: a launcher for the Veered multiplayer browser game
 styled after a DOS-era text menu, plus an "Oversimplified Breakout" where clearing a
 row of bricks launches that game.
 
+## Please test before relying on it
+
+This is shared as-is, with no warranty. It works on my own computers, but your system,
+settings and software versions may differ, so please try it in a safe setting first.
+If something doesn't work, you can ask Claude (or another AI coding assistant) to look
+into it, and I'd appreciate hearing what you found and how you fixed it. You are also
+welcome to just let me know at support@veered.org, and I'll look into it.
+
 ## What is in it
 
 - `public/index.html`: the menu. It renders a real 80x25 character grid in the IBM
