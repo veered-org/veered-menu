@@ -2,20 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>
-/* Anyone who has opened the modern website gets it from now on (cookie set
-   there). The modern site's "Classic menu" links carry ?classic=1, which
-   clears the choice and shows this menu again. */
-(function(){
-  try {
-    if (/[?&]classic=1\b/.test(location.search)) {
-      document.cookie = 'veered_view=; path=/; max-age=0; SameSite=Lax; Secure';
-    } else if (/(?:^|;\s*)veered_view=modern\b/.test(document.cookie)) {
-      location.replace('/modern/');
-    }
-  } catch (e) {}
-})();
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Veered Menu — Free Browser Games and Open-Source Tools</title>
 <meta name="robots" content="noindex">
@@ -156,7 +142,7 @@ const MENUS = {
       url:'https://veered.org/code/', fg:7 },
     { label:'Modern website please!', gap:true, bold:true,
       desc:'The same games and tools on a regular, modern web page.',
-      url:'/modern/', fg:14 },
+      url:'/', fg:14 },
   ]},
   games: { title:'Multiplayer Games', items:[
     { label:'Merlot: Real-time multiplayer tank game', bold:true,
