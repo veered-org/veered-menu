@@ -21,6 +21,7 @@
     --g2:#c8457a;   /* maroon isles quest */
     --g3:#f0821e;   /* carmine (swarm) */
     --g4:#e0b83a;   /* trifecta */
+    --g5:#6fa0c8;   /* musket */
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
@@ -100,10 +101,12 @@
   .card[data-g="1"]{border-left-color:var(--g2)}
   .card[data-g="2"]{border-left-color:var(--g3)}
   .card[data-g="3"]{border-left-color:var(--g4)}
+  .card[data-g="4"]{border-left-color:var(--g5)}
   .card[data-g="0"]:hover,.card[data-g="0"]:focus-visible{border-color:var(--g1)}
   .card[data-g="1"]:hover,.card[data-g="1"]:focus-visible{border-color:var(--g2)}
   .card[data-g="2"]:hover,.card[data-g="2"]:focus-visible{border-color:var(--g3)}
   .card[data-g="3"]:hover,.card[data-g="3"]:focus-visible{border-color:var(--g4)}
+  .card[data-g="4"]:hover,.card[data-g="4"]:focus-visible{border-color:var(--g5)}
   .card svg{width:44px;height:44px;flex:0 0 44px;shape-rendering:crispEdges}
   .card h2{margin:0 0 3px;font-size:13px;letter-spacing:.12em}
   .card p{margin:0;font-size:11px;line-height:1.45;color:var(--dim);letter-spacing:.04em}
@@ -133,7 +136,7 @@
 <section class="stage" id="stage">
   <canvas id="cv" width="320" height="200" aria-label="Breakout-style game selector. Press 1, 2 or 3 to choose a game, or scroll down for links."></canvas>
   <div class="hud">
-    <span id="hint"><a class="back" href="./">Esc &mdash; AutoMenu</a> &nbsp;&middot;&nbsp; Arrow keys or mouse to move &middot; 1-4 to select</span>
+    <span id="hint"><a class="back" href="./">Esc &mdash; AutoMenu</a> &nbsp;&middot;&nbsp; Arrow keys or mouse to move &middot; 1-5 to select</span>
     <span class="btns">
       <button id="snd" aria-pressed="true">Sound: on</button>
       <button id="fs">Full screen</button>
@@ -152,6 +155,7 @@
        whoever you want to play with.</p>
     <code>https://swarm.veered.org</code>
     <code>https://merlot.veered.org</code>
+    <code>https://musket.veered.org</code>
     <code>https://quest.veered.org</code>
   </details>
 
@@ -187,6 +191,12 @@ const GAMES = [
     blurb:'War, Ratscrew and 1-2-3-4 chained together. Read the rules now; the online version is on its way.',
     url:'/trifecta/',
     color:'#e0b83a' },
+  { key:'5',
+    title:'MUSKET',
+    sub:'MINIONS CLONE',
+    blurb:'Minions is back: knock down their towers, then their base. 1 to 12 players, bots fill any empty seat.',
+    url:'https://musket.veered.org',
+    color:'#6fa0c8' },
 ];
 
 /* 16x16 pixel icons — the silhouette has to step in width or a
@@ -222,6 +232,12 @@ const ICONS = [
    <rect x="7" y="1" width="8" height="11"/>
    <rect x="8" y="2" width="6" height="9" fill="#000"/>
    <rect x="10" y="5" width="2" height="3"/>`,
+  /* tower with a flag */
+  `<rect x="8" y="1" width="1" height="5"/><rect x="9" y="1" width="4" height="2"/>
+   <rect x="4" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/>
+   <rect x="10" y="5" width="2" height="2"/>
+   <rect x="4" y="7" width="8" height="8"/>
+   <rect x="7" y="11" width="2" height="4" fill="#000"/>`,
 ];
 
 /* ---------------- cards (also the no-JS / no-canvas fallback) ------- */
@@ -245,7 +261,7 @@ const ctx = cv.getContext('2d');
    the viewport, so the playfield fills the screen instead of letterboxing. */
 const H = 200, COLS = 8, GAP = 2, MARGIN = 16;
 let W = 320, BW = 34, LEFT = 16;
-const ROW_Y = [46, 72, 98, 124];
+const ROW_Y = [46, 72, 98, 124, 150];
 
 const rows = GAMES.map((g, r) => ({
   y: ROW_Y[r], color: g.color, label: g.title + '  ' + g.sub,
