@@ -229,7 +229,10 @@ const MENUS = {
     { label:'Oxblood: PDF signer',
       desc:'Draw or type your signature on a PDF, add the date, download. Runs in the browser.',
       url:'/pdf-signer/', fg:12 },
-    { label:'Madder: patent docketing',
+    { label:'Rubric: bilingual book maker',
+      desc:'Free books and Wikipedia articles turned into glossed, printable editions for language learners.',
+      url:'/bilingual-book-maker/', fg:12 },
+    { label:'Pendant: patent docketing',
       desc:'Deadlines, USPTO notices, client reminder emails and letters for a small patent and trademark practice.',
       url:'/patent-docketing/', fg:12 },
     { label:'Redwood: Braintree checkout',
@@ -389,10 +392,12 @@ function render(){
       }
     } else {
       const gaps = ITEMS.slice(0, i + 1).filter(x => x.gap).length;
-      const top = 4 + (i + gaps)*2;
+      /* more than eight choices: drop the spacer rows so all of them fit */
+      const step = ITEMS.length + ITEMS.filter(x => x.gap).length > 8 ? 1 : 2;
+      const top = 4 + (i + gaps)*step;
       L[top] = rowHTML(SIDE([{x:26, t:'■', fg:it.fg}, ...labelRow(0)]),
         `class="row item" data-i="${i}" role="menuitem"`);
-      if (lines.length > 1) L[top+1] = rowHTML(SIDE(labelRow(1)), `class="row item" data-i="${i}"`);
+      if (lines.length > 1 && step === 2) L[top+1] = rowHTML(SIDE(labelRow(1)), `class="row item" data-i="${i}"`);
     }
   });
 
